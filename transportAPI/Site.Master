@@ -6,49 +6,58 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%: Page.Title %> - My ASP.NET Application</title>
-
+        <title>OneMap2 XYZ (Default)</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+        <script src="https://cdn.onemap.sg/leaflet/onemap-leaflet.js"></script>
     <asp:PlaceHolder runat="server">
-        <%: Scripts.Render("~/bundles/modernizr") %>
     </asp:PlaceHolder>
 
-    <webopt:bundlereference runat="server" path="~/Content/css" />
-    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
 </head>
 <body>
     <form runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
-                <%--To learn more about bundling scripts in ScriptManager see https://go.microsoft.com/fwlink/?LinkID=301884 --%>
-                <%--Framework Scripts--%>
-                <asp:ScriptReference Name="MsAjaxBundle" />
-                <asp:ScriptReference Name="jquery" />
-                <asp:ScriptReference Name="bootstrap" />
-                <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
-                <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
-                <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
-                <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
-                <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
-                <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
-                <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
-                <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
-                <asp:ScriptReference Name="WebFormsBundle" />
-                <%--Site Scripts--%>
+
             </Scripts>
         </asp:ScriptManager>
-
-
         
         <div class="container body-content">
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                    <h1>Singapore Map</h1>
+                    <div id='mapdiv' style='height:800px;'></div>
             </asp:ContentPlaceHolder>
-            <hr />
-            <footer>
-                <p>&copy; <%: DateTime.Now.Year %> - My ASP.NET Application</p>
-            </footer>
         </div>
 
     </form>
+          <!-- script for map display -->
+          <script>
+              var center = L.bounds([1.56073, 104.11475], [1.16, 103.502]).getCenter();
+              var map = L.map('mapdiv').setView([center.x, center.y], 12);
+
+              var basemap = L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
+                  detectRetina: true,
+                  maxZoom: 18,
+                  minZoom: 11
+              });
+
+              map.setMaxBounds([[1.56073, 104.1147], [1.16, 103.502]]);
+
+              basemap.addTo(map);
+
+              function getLocation() {
+                  if (navigator.geolocation) {
+                      navigator.geolocation.getCurrentPosition(showPosition);
+                  }
+              }
+
+              function showPosition(position) {
+                  marker = new L.Marker([position.coords.latitude, position.coords.longitude], { bounceOnAdd: false }).addTo(map);
+                  var popup = L.popup()
+                      .setLatLng([position.coords.latitude, position.coords.longitude])
+                      .setContent('You are here!')
+                      .openOn(map);
+              }
+      </script>
 </body>
 </html>
