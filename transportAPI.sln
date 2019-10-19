@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "transportAPI", "transportAPI\transportAPI.csproj", "{F1626B9A-B8C4-4772-A87B-8204B3A37EA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1626B9A-B8C4-4772-A87B-8204B3A37EA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1626B9A-B8C4-4772-A87B-8204B3A37EA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1626B9A-B8C4-4772-A87B-8204B3A37EA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1626B9A-B8C4-4772-A87B-8204B3A37EA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D6952596-5B5D-4024-BDF7-57D6F91AE8F5}
+	EndGlobalSection
+EndGlobal
