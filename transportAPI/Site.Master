@@ -28,7 +28,6 @@
                 <asp:TextBox ID="TextBox2" runat="server" OnTextChanged="TextBox2_TextChanged">Starting location</asp:TextBox>
             </div>
             <div id="button">
-                <button type="button" onclick="showEndPosition()">Show map marker</button>
                 <asp:Button ID="Button1" runat="server" OnClick="Button1_Click1" Text="Search" />
             </div>
             <div id='mapdiv' style='height: 800px;'></div>
@@ -67,14 +66,20 @@
 
         //show current position
         function showPosition(position) {
-
-            marker = new L.Marker([position.coords.latitude, position.coords.longitude], { bounceOnAdd: false }).addTo(map);
-            var popup = L.popup()
-                .setLatLng([position.coords.latitude, position.coords.longitude])
-                .setContent('You are here!')
-                .openOn(map);
-
-
+            if (startLatitude != null && startLongitude != null) {
+                marker = new L.Marker([startLatitude, startLongitude], { bounceOnAdd: false }).addTo(map);
+                var popup = L.popup()
+                    .setLatLng([startLatitude, startLongitude])
+                    .setContent('Starting point here!')
+                    .openOn(map);
+            }
+            else {
+                marker = new L.Marker([position.coords.latitude, position.coords.longitude], { bounceOnAdd: false }).addTo(map);
+                var popup = L.popup()
+                    .setLatLng([position.coords.latitude, position.coords.longitude])
+                    .setContent('You are here!')
+                    .openOn(map);
+            }
         }
 
         //show destination position
@@ -87,13 +92,7 @@
         }
 
         getLocation();
-
-        $(document).ready(function () {
-            $('#Button1').click(function () {
-                showEndPosition();
-            });
-        });
-
+        showEndPosition();
     </script>
 </body>
 </html>

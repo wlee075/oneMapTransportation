@@ -14,8 +14,8 @@ namespace transportAPI
     {
         public string destinationLat;
         public string destinationLon;
-        public string startLat;
-        public string startLon;
+        public string startLat = null;
+        public string startLon = null;
         private string destinationInput;
         private string startLocationInput;
 
@@ -101,6 +101,9 @@ namespace transportAPI
             startLocationInput = TextBox2.Text;
             GetAddress(destinationInput);
             GetAddress(startLocationInput);
+
         }
+
+
     }
 }
