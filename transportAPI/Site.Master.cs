@@ -19,6 +19,7 @@ namespace transportAPI
         private string destinationInput;
         private string startLocationInput;
         private string transportType;
+        //reminder: token expires after 3 days. dont forget to request new one.
         private const string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjM0MzYsInVzZXJfaWQiOjM0MzYsImVtYWlsIjoid2xlZTA3NUBlLm50dS5lZHUuc2ciLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE1NzE5MzE0NjksImV4cCI6MTU3MjM2MzQ2OSwibmJmIjoxNTcxOTMxNDY5LCJqdGkiOiJmMDRlMWNlMzVlZTFiMmNlOGMzNDE0N2UxNjFhYzZhMiJ9.BradZOMhi5tEdYs_1SYCdSyd5ZKswqumkjM4SlUoWIo";
 
         public class Address
@@ -31,6 +32,56 @@ namespace transportAPI
             public string building { get; set; }
             public string latitude { get; set; }
             public string longitude { get; set; }
+        }
+
+        public class publicTransport
+        {
+            public PublicTransportRoute Plan { get; set; }
+        }
+
+        public class PublicTransportRoute
+        {
+            public List<From> From { get; set; }
+            public List<To> To { get; set; }
+            public List<List<PublicTransportRouteItineraries>> Itineraries { get; set; }
+        }
+
+        public class From
+        {
+            public string Name { get; set; }
+            public int Lon { get; set; }
+            public int Lat { get; set; }
+        }
+
+        public class To
+        {
+            public string Name { get; set; }
+            public int Lon { get; set; }
+            public int Lat { get; set; }
+        }
+
+        public class PublicTransportRouteItineraries
+        {
+            public int Duration { get; set; }
+            public int StartTime { get; set; }
+            public int EndTime { get; set; }
+            public int WalkTime { get; set; }
+            public int TransitTime { get; set; }
+            public int WaitingTime { get; set; }
+            public int WalkDistance { get; set; }
+            public List<List<PublicTransportRouteLegs>> Legs { get; set; }
+        }
+
+        public class PublicTransportRouteLegs
+        {
+            public int StartTime { get; set; }
+            public int EndTime { get; set; }
+            public int DepartureDelay { get; set; }
+            public int ArrivalDelay { get; set; }
+            public string Mode { get; set; }
+            public List<From> From { get; set; }
+            public List<To> To { get; set; }
+            public int NumIntermediateStops { get; set; }
         }
 
         public class Route
@@ -152,33 +203,63 @@ namespace transportAPI
             transportType = selectedValue;
         }
 
+        //GET METHOD for route query
         private void GetInstructions()
         {
-            //GET METHOD for route query
-            string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start="+
-                startLat+","+ startLon +"&end="+ destinationLat +","+ destinationLon+"&"+
-                "routeType="+ transportType + "&token="+token);
-            System.Diagnostics.Debug.WriteLine(strurltest);
-            WebRequest requestObjGet = WebRequest.Create(strurltest);
-            requestObjGet.Method = "GET";
-            HttpWebResponse responseObjGet = null;
-            responseObjGet = (HttpWebResponse)requestObjGet.GetResponse();
-            string strresulttest = null;
-            using (Stream stream = responseObjGet.GetResponseStream())
+            System.Diagnostics.Debug.WriteLine("HELLO WORLD" +transportType);
+            if (transportType == "pt")
             {
-                StreamReader sr = new StreamReader(stream);
-                strresulttest = sr.ReadToEnd();
-                //reminder: remove after prod. GET is working.
-                System.Diagnostics.Debug.WriteLine(strresulttest);
-                sr.Close();
+                var time = DateTime.Now.ToString("HH:mm:ss");
+                var date = DateTime.Today.ToString("yyyy-MM-dd");
+                string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
+                         startLat + "," + startLon + "&end=" + destinationLat + "," + destinationLon + "&" +
+                         "routeType=" + transportType + "&token=" + token+ "&date="+date+"&time="+time+ "&mode=TRANSIT&maxWalkDistance=1000&numItineraries=3");
+                WebRequest requestObjGet = WebRequest.Create(strurltest);
+                requestObjGet.Method = "GET";
+                HttpWebResponse responseObjGet = null;
+                responseObjGet = (HttpWebResponse)requestObjGet.GetResponse();
+                string strresulttest = null;
+                using (Stream stream = responseObjGet.GetResponseStream())
+                {
+                    StreamReader sr = new StreamReader(stream);
+                    strresulttest = sr.ReadToEnd();
+                    //reminder: remove after prod. GET is working.
+                    System.Diagnostics.Debug.WriteLine(strresulttest);
+                    sr.Close();
+                }
+                publicTransport route = new JavaScriptSerializer().Deserialize<publicTransport>(strresulttest);
+                //display route instructions
+                System.Diagnostics.Debug.WriteLine(route.Plan.Itineraries);
+                foreach (var item in route.Plan.Itineraries)
+                {
+                    TextBox3.Text = TextBox3.Text + Environment.NewLine + item;
+                }
             }
-
-            Route route = new JavaScriptSerializer().Deserialize<Route>(strresulttest);
-            //display route instructions
-            foreach (var item in route.route_instructions)
+            else if (transportType == "drive" || transportType == "cycle" || transportType == "walk")
             {
-                System.Diagnostics.Debug.WriteLine(item[9] + "\n");
-                TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
+                string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start="+
+                            startLat+","+ startLon +"&end="+ destinationLat +","+ destinationLon+"&"+
+                            "routeType="+ transportType + "&token="+token);
+                WebRequest requestObjGet = WebRequest.Create(strurltest);
+                requestObjGet.Method = "GET";
+                HttpWebResponse responseObjGet = null;
+                responseObjGet = (HttpWebResponse)requestObjGet.GetResponse();
+                string strresulttest = null;
+                using (Stream stream = responseObjGet.GetResponseStream())
+                {
+                    StreamReader sr = new StreamReader(stream);
+                    strresulttest = sr.ReadToEnd();
+                    //reminder: remove after prod. GET is working.
+                    System.Diagnostics.Debug.WriteLine(strresulttest);
+                    sr.Close();
+                }
+
+                Route route = new JavaScriptSerializer().Deserialize<Route>(strresulttest);
+                //display route instructions
+                foreach (var item in route.route_instructions)
+                {
+                    TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
+                }
             }
         }
 
