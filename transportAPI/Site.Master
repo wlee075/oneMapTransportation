@@ -20,7 +20,8 @@
         </asp:ScriptManager>
 
         <div class="container body-content">
-            <h1>Singapore Map</h1>
+            <h1>Singapore Map
+            </h1>
             <div id="textbox1">
                 <asp:TextBox ID="TextBox1" runat="server" OnTextChanged="TextBox1_TextChanged">Destination location</asp:TextBox>
             </div>
@@ -28,8 +29,18 @@
                 <asp:TextBox ID="TextBox2" runat="server" OnTextChanged="TextBox2_TextChanged">Starting location</asp:TextBox>
             </div>
             <div id="button">
-                <asp:Button ID="Button1" runat="server" OnClick="Button1_Click1" Text="Search" />
+                <asp:Label ID="Label1" runat="server" Text="Mode of transport"></asp:Label>
+             <asp:RadioButtonList ID="TptOptions" CssClass="radioButtonList" runat="server" RepeatDirection="Horizontal" OnSelectedIndexChanged="TptOptions_SelectedIndexChanged">
+                <asp:ListItem>drive</asp:ListItem>
+                <asp:ListItem>pt</asp:ListItem>
+                <asp:ListItem>walk</asp:ListItem>
+                <asp:ListItem>cycle</asp:ListItem>
+            </asp:RadioButtonList>
+<asp:Button ID="Button1" runat="server" OnClick="Button1_Click1" Text="Search" />
             </div>
+            
+            <asp:TextBox ID="TextBox3" runat="server" TextMode="MultiLine" Height="146px" OnTextChanged="TextBox3_TextChanged">Directions:</asp:TextBox>
+                
             <div id='mapdiv' style='height: 800px;'></div>
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
