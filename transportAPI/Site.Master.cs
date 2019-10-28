@@ -22,6 +22,7 @@ namespace transportAPI
         private string destinationInput;
         private string startLocationInput;
         private string transportType;
+        private string AddressFromCoordinates;
         //reminder: token expires after 3 days. dont forget to request new one.
         private const string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjM0MzYsInVzZXJfaWQiOjM0MzYsImVtYWlsIjoid2xlZTA3NUBlLm50dS5lZHUuc2ciLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE1NzE5MzE0NjksImV4cCI6MTU3MjM2MzQ2OSwibmJmIjoxNTcxOTMxNDY5LCJqdGkiOiJmMDRlMWNlMzVlZTFiMmNlOGMzNDE0N2UxNjFhYzZhMiJ9.BradZOMhi5tEdYs_1SYCdSyd5ZKswqumkjM4SlUoWIo";
         public string route_geometry;
@@ -241,13 +242,33 @@ namespace transportAPI
             public string subtitle { get; set; }
         }
 
+
+        public class Rootobject
+        {
+            public Geocodeinfo[] GeocodeInfo { get; set; }
+        }
+
+        public class Geocodeinfo
+        {
+            public string BUILDINGNAME { get; set; }
+            public string BLOCK { get; set; }
+            public string ROAD { get; set; }
+            public string POSTALCODE { get; set; }
+            public string XCOORD { get; set; }
+            public string YCOORD { get; set; }
+            public string LATITUDE { get; set; }
+            public string LONGITUDE { get; set; }
+            public string LONGTITUDE { get; set; }
+        }
+
+
         protected void Page_Load(object sender, EventArgs e)
         {
 
             //reminder: remove after prod. Retrieving input from textbox is working.
             //System.Diagnostics.Debug.WriteLine("Destination: "+destinationInput+ " Start: "+ startLocationInput);
         }
-
+        //GET METHOD for search query
         private void GetAddress(string address)
         {
             //GET METHOD for destination search query
@@ -336,7 +357,7 @@ namespace transportAPI
                 var mode = "BUS";
                 string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
                          startLat + "," + startLon + "&end=" + destinationLat + "," + destinationLon + "&" +
-                         "routeType=" + transportType + "&token=" + token + "&date=" + date + "&time=" + time + "&mode="+mode+"&maxWalkDistance=1000&numItineraries=1");
+                         "routeType=" + transportType + "&token=" + token + "&date=" + date + "&time=" + time + "&mode=" + mode + "&maxWalkDistance=1000&numItineraries=1");
                 WebRequest requestObjGet = WebRequest.Create(strurltest);
                 requestObjGet.Method = "GET";
                 HttpWebResponse responseObjGet = null;
@@ -356,24 +377,25 @@ namespace transportAPI
                 foreach (var item in route.plan.itineraries)
                 {
                     int i = 0;
-                    routeCoo = new string[item.legs.Count()*2];
-                    
+                    routeCoo = new string[item.legs.Count() * 2];
+
                     foreach (var leg in item.legs) //ITINERARY
-                    {                        
+                    {
                         routeCoo[i] = leg.from.lat.ToString() + "," + leg.from.lon.ToString();
                         ++i;
                         routeCoo[i] = leg.to.lat.ToString() + "," + leg.to.lon.ToString();
                         i++;
-                        if(leg.mode == "WALK")
+                        if (leg.mode == "WALK")
                         {
                             foreach (var steps in leg.steps)
                             {
-                               TextBox3.Text = TextBox3.Text + Environment.NewLine + leg.mode + " " + steps.absoluteDirection + " FOR "+ leg.distance+" METRES";
+                                TextBox3.Text = TextBox3.Text + Environment.NewLine + leg.mode + " FROM " + leg.from.name +
+                                    " " + steps.absoluteDirection + " FOR " + leg.distance + " METRES " + "TOWARDS " + leg.to.name;
                             }
                         }
-                        else if(leg.mode == "SUBWAY")
+                        else if (leg.mode == "SUBWAY")
                         {
-                            TextBox3.Text = TextBox3.Text + Environment.NewLine + "TAKE " + leg.mode + " (" + leg.routeLongName+ ") "+" FROM " + leg.from.name + " TO " + leg.to.name + " FOR "+ leg.numIntermediateStops + " STOP(S)";
+                            TextBox3.Text = TextBox3.Text + Environment.NewLine + "TAKE " + leg.mode + " (" + leg.routeLongName + ") " + " FROM " + leg.from.name + " TO " + leg.to.name + " FOR " + leg.numIntermediateStops + " STOP(S)";
                         }
                         else if (leg.mode == "BUS")
                         {
@@ -408,10 +430,51 @@ namespace transportAPI
                 {
                     routeCoo[i] = item[3].ToString();
                     i++;
-                    TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
+                    if(transportType == "walk")
+                    {
+                        if(item[5].ToString() != "0m" && item[0].ToString() != "Head")
+                            TextBox3.Text = TextBox3.Text + Environment.NewLine + "In " + item[5] + " " + item[9];
+                        else if(item[5].ToString() != "0m" && item[0].ToString() == "Head")
+                            TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9] +" For " + item[5];
+                        else
+                            TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
+                    }
+                    else
+                    {
+                        TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
+                    }
+                    
 
                 }
             }
+        }
+
+        //GET METHOD for search query given coordinates
+        private void GetAddressCoordinates(float latitude, float longitude)
+        {
+            //GET METHOD for destination search query
+            //string strurltest = String.Format("https://developers.onemap.sg/privateapi/commonsvc/revgeocodexy?location=" + latitude + "," + longitude + "&token=" + token);
+            string strurltest = String.Format("https://developers.onemap.sg/privateapi/commonsvc/revgeocodexy?location=24291.97788882387,31373.0117224489&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjM0MzYsInVzZXJfaWQiOjM0MzYsImVtYWlsIjoid2xlZTA3NUBlLm50dS5lZHUuc2ciLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE1NzIyODQxNjQsImV4cCI6MTU3MjcxNjE2NCwibmJmIjoxNTcyMjg0MTY0LCJqdGkiOiI0NjM2YWQ2MjRiMWYyNWEyMjQwNzVlMmJmNDM1NTM1OCJ9._EXlHZy8A9qSNxg0E4yYfpDLpTPH82FMxw1Zua5exL4");
+            WebRequest requestObjGet = WebRequest.Create(strurltest);
+            requestObjGet.Method = "GET";
+            HttpWebResponse responseObjGet = null;
+            responseObjGet = (HttpWebResponse)requestObjGet.GetResponse();
+            string strresulttest = null;
+            using (Stream stream = responseObjGet.GetResponseStream())
+            {
+                StreamReader sr = new StreamReader(stream);
+                strresulttest = sr.ReadToEnd();
+                System.Diagnostics.Debug.WriteLine(strresulttest);
+                sr.Close();
+            }
+
+            //display search recommendations
+            Rootobject searchAddressFromCoords = new JavaScriptSerializer().Deserialize<Rootobject>(strresulttest);
+            foreach (var item in searchAddressFromCoords.GeocodeInfo)
+            {
+                System.Diagnostics.Debug.WriteLine("bbooo"+item.ROAD);
+            }
+            System.Diagnostics.Debug.WriteLine(AddressFromCoordinates);
         }
 
     }

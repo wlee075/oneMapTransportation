@@ -13,7 +13,7 @@
     <link href="Content/leaflet.css" rel="stylesheet" />
     <script src="Scripts/leaflet-0.7.3.js"></script>
     <script src="Scripts/leaflet-0.7.3.min.js"></script>
-
+    <!-- new -->
     <asp:PlaceHolder runat="server"></asp:PlaceHolder>
 
 </head>
