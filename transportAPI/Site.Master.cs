@@ -7,11 +7,14 @@ using System.Net;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Script.Serialization;
+using static transportAPI.SiteMaster;
 
 namespace transportAPI
 {
     public partial class SiteMaster : MasterPage
-    {
+    {   
+        //route coordinates
+        public string[] routeCoo; 
         public string destinationLat;
         public string destinationLon;
         public string startLat;
@@ -21,6 +24,7 @@ namespace transportAPI
         private string transportType;
         //reminder: token expires after 3 days. dont forget to request new one.
         private const string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjM0MzYsInVzZXJfaWQiOjM0MzYsImVtYWlsIjoid2xlZTA3NUBlLm50dS5lZHUuc2ciLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE1NzE5MzE0NjksImV4cCI6MTU3MjM2MzQ2OSwibmJmIjoxNTcxOTMxNDY5LCJqdGkiOiJmMDRlMWNlMzVlZTFiMmNlOGMzNDE0N2UxNjFhYzZhMiJ9.BradZOMhi5tEdYs_1SYCdSyd5ZKswqumkjM4SlUoWIo";
+        public string route_geometry;
 
         public class Address
         {
@@ -199,14 +203,12 @@ namespace transportAPI
         protected void TptOptions_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedValue = TptOptions.SelectedItem.Text;
-            //System.Diagnostics.Debug.WriteLine(selectedValue);
             transportType = selectedValue;
         }
 
         //GET METHOD for route query
         private void GetInstructions()
         {
-            System.Diagnostics.Debug.WriteLine("HELLO WORLD" +transportType);
             if (transportType == "pt")
             {
                 var time = DateTime.Now.ToString("HH:mm:ss");
@@ -235,7 +237,7 @@ namespace transportAPI
                     TextBox3.Text = TextBox3.Text + Environment.NewLine + item;
                 }
             }
-            else if (transportType == "drive" || transportType == "cycle" || transportType == "walk")
+            else if (transportType == "drive" || transportType == "walk")
             {
                 string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start="+
                             startLat+","+ startLon +"&end="+ destinationLat +","+ destinationLon+"&"+
@@ -249,19 +251,24 @@ namespace transportAPI
                 {
                     StreamReader sr = new StreamReader(stream);
                     strresulttest = sr.ReadToEnd();
-                    //reminder: remove after prod. GET is working.
-                    System.Diagnostics.Debug.WriteLine(strresulttest);
                     sr.Close();
                 }
 
                 Route route = new JavaScriptSerializer().Deserialize<Route>(strresulttest);
+                route_geometry = route.route_geometry;
                 //display route instructions
+                routeCoo = new string[route.route_instructions.Count];
+                int i = 0;
                 foreach (var item in route.route_instructions)
                 {
+                    routeCoo[i] = item[3].ToString();
+                    i++;
                     TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
+                    
                 }
             }
         }
-
+  
     }
+
 }
