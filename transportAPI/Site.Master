@@ -132,7 +132,7 @@
 
         %>
         ];
-        var polyline = L.polyline(latlngs, { color: 'red' }).addTo(map);
+        var polyline = L.polyline(latlngs, { color: 'purple' }).addTo(map);
         // zoom the map to the polyline
         map.fitBounds(polyline.getBounds());
     </script>

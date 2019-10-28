@@ -12,9 +12,9 @@ using static transportAPI.SiteMaster;
 namespace transportAPI
 {
     public partial class SiteMaster : MasterPage
-    {   
+    {
         //route coordinates
-        public string[] routeCoo; 
+        public string[] routeCoo;
         public string destinationLat;
         public string destinationLon;
         public string startLat;
@@ -38,55 +38,175 @@ namespace transportAPI
             public string longitude { get; set; }
         }
 
-        public class publicTransport
+
+        public class PublicTransport
         {
-            public PublicTransportRoute Plan { get; set; }
+            public Requestparameters requestParameters { get; set; }
+            public Plan plan { get; set; }
+            public Debugoutput debugOutput { get; set; }
+            public Elevationmetadata elevationMetadata { get; set; }
         }
 
-        public class PublicTransportRoute
+        public class Requestparameters
         {
-            public List<From> From { get; set; }
-            public List<To> To { get; set; }
-            public List<List<PublicTransportRouteItineraries>> Itineraries { get; set; }
+            public string date { get; set; }
+            public string preferredRoutes { get; set; }
+            public string walkReluctance { get; set; }
+            public string fromPlace { get; set; }
+            public string transferPenalty { get; set; }
+            public string maxWalkDistance { get; set; }
+            public string maxTransfers { get; set; }
+            public string otherThanPreferredRoutesPenalty { get; set; }
+            public string numItineraries { get; set; }
+            public string waitAtBeginningFactor { get; set; }
+            public string mode { get; set; }
+            public string arriveBy { get; set; }
+            public string showIntermediateStops { get; set; }
+            public string toPlace { get; set; }
+            public string time { get; set; }
+        }
+
+        public class Plan
+        {
+            public long date { get; set; }
+            public From from { get; set; }
+            public To to { get; set; }
+            public Itinerary[] itineraries { get; set; }
         }
 
         public class From
         {
-            public string Name { get; set; }
-            public int Lon { get; set; }
-            public int Lat { get; set; }
+            public string name { get; set; }
+            public float lon { get; set; }
+            public float lat { get; set; }
+            public string orig { get; set; }
+            public string vertexType { get; set; }
         }
 
         public class To
         {
-            public string Name { get; set; }
-            public int Lon { get; set; }
-            public int Lat { get; set; }
+            public string name { get; set; }
+            public float lon { get; set; }
+            public float lat { get; set; }
+            public string orig { get; set; }
+            public string vertexType { get; set; }
         }
 
-        public class PublicTransportRouteItineraries
+        public class Itinerary
         {
-            public int Duration { get; set; }
-            public int StartTime { get; set; }
-            public int EndTime { get; set; }
-            public int WalkTime { get; set; }
-            public int TransitTime { get; set; }
-            public int WaitingTime { get; set; }
-            public int WalkDistance { get; set; }
-            public List<List<PublicTransportRouteLegs>> Legs { get; set; }
+            public int duration { get; set; }
+            public long startTime { get; set; }
+            public long endTime { get; set; }
+            public int walkTime { get; set; }
+            public int transitTime { get; set; }
+            public int waitingTime { get; set; }
+            public float walkDistance { get; set; }
+            public bool walkLimitExceeded { get; set; }
+            public int elevationLost { get; set; }
+            public int elevationGained { get; set; }
+            public int transfers { get; set; }
+            public Leg[] legs { get; set; }
+            public bool tooSloped { get; set; }
+            public string fare { get; set; }
         }
 
-        public class PublicTransportRouteLegs
+        public class Leg
         {
-            public int StartTime { get; set; }
-            public int EndTime { get; set; }
-            public int DepartureDelay { get; set; }
-            public int ArrivalDelay { get; set; }
-            public string Mode { get; set; }
-            public List<From> From { get; set; }
-            public List<To> To { get; set; }
-            public int NumIntermediateStops { get; set; }
+            public long startTime { get; set; }
+            public long endTime { get; set; }
+            public int departureDelay { get; set; }
+            public int arrivalDelay { get; set; }
+            public bool realTime { get; set; }
+            public float distance { get; set; }
+            public bool pathway { get; set; }
+            public string mode { get; set; }
+            public string route { get; set; }
+            public int agencyTimeZoneOffset { get; set; }
+            public bool interlineWithPreviousLeg { get; set; }
+            public From1 from { get; set; }
+            public To1 to { get; set; }
+            public Leggeometry legGeometry { get; set; }
+            public bool rentedBike { get; set; }
+            public bool transitLeg { get; set; }
+            public int duration { get; set; }
+            public object[] intermediateStops { get; set; }
+            public Step[] steps { get; set; }
+            public int numIntermediateStops { get; set; }
+            public string agencyName { get; set; }
+            public string agencyUrl { get; set; }
+            public int routeType { get; set; }
+            public string routeId { get; set; }
+            public string agencyId { get; set; }
+            public string tripId { get; set; }
+            public string serviceDate { get; set; }
+            public string routeShortName { get; set; }
+            public string routeLongName { get; set; }
         }
+
+        public class From1
+        {
+            public string name { get; set; }
+            public float lon { get; set; }
+            public float lat { get; set; }
+            public long departure { get; set; }
+            public string orig { get; set; }
+            public string vertexType { get; set; }
+            public long arrival { get; set; }
+            public string stopId { get; set; }
+            public int stopIndex { get; set; }
+            public int stopSequence { get; set; }
+        }
+
+        public class To1
+        {
+            public string name { get; set; }
+            public float lon { get; set; }
+            public float lat { get; set; }
+            public long arrival { get; set; }
+            public long departure { get; set; }
+            public string vertexType { get; set; }
+            public string stopId { get; set; }
+            public int stopIndex { get; set; }
+            public int stopSequence { get; set; }
+            public string orig { get; set; }
+        }
+
+        public class Leggeometry
+        {
+            public string points { get; set; }
+            public int length { get; set; }
+        }
+
+        public class Step
+        {
+            public float distance { get; set; }
+            public string relativeDirection { get; set; }
+            public string streetName { get; set; }
+            public string absoluteDirection { get; set; }
+            public bool stayOn { get; set; }
+            public bool area { get; set; }
+            public bool bogusName { get; set; }
+            public float lon { get; set; }
+            public float lat { get; set; }
+            public object[] elevation { get; set; }
+        }
+
+        public class Debugoutput
+        {
+            public int precalculationTime { get; set; }
+            public int pathCalculationTime { get; set; }
+            public int[] pathTimes { get; set; }
+            public int renderingTime { get; set; }
+            public int totalTime { get; set; }
+            public bool timedOut { get; set; }
+        }
+
+        public class Elevationmetadata
+        {
+            public float ellipsoidToGeoidDifference { get; set; }
+            public bool geoidElevation { get; set; }
+        }
+
 
         public class Route
         {
@@ -160,8 +280,8 @@ namespace transportAPI
                     System.Diagnostics.Debug.WriteLine("Longitude: " + item.longitude + "\n");
                     break;
                 }
-               
-                if(item.building == address.ToUpper() && address == startLocationInput)
+
+                if (item.building == address.ToUpper() && address == startLocationInput)
                 {
                     startLat = item.latitude;
                     startLon = item.longitude;
@@ -175,10 +295,10 @@ namespace transportAPI
 
             }
         }
-                                                                                                                                                                                                                                                                                                           
+
         protected void TextBox1_TextChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         protected void TextBox2_TextChanged(object sender, EventArgs e)
@@ -215,7 +335,7 @@ namespace transportAPI
                 var date = DateTime.Today.ToString("yyyy-MM-dd");
                 string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
                          startLat + "," + startLon + "&end=" + destinationLat + "," + destinationLon + "&" +
-                         "routeType=" + transportType + "&token=" + token+ "&date="+date+"&time="+time+ "&mode=TRANSIT&maxWalkDistance=1000&numItineraries=3");
+                         "routeType=" + transportType + "&token=" + token + "&date=" + date + "&time=" + time + "&mode=TRANSIT&maxWalkDistance=1000&numItineraries=1");
                 WebRequest requestObjGet = WebRequest.Create(strurltest);
                 requestObjGet.Method = "GET";
                 HttpWebResponse responseObjGet = null;
@@ -226,22 +346,37 @@ namespace transportAPI
                     StreamReader sr = new StreamReader(stream);
                     strresulttest = sr.ReadToEnd();
                     //reminder: remove after prod. GET is working.
-                    System.Diagnostics.Debug.WriteLine(strresulttest);
+                    //System.Diagnostics.Debug.WriteLine(strresulttest);
                     sr.Close();
                 }
-                publicTransport route = new JavaScriptSerializer().Deserialize<publicTransport>(strresulttest);
+                PublicTransport route = new JavaScriptSerializer().Deserialize<PublicTransport>(strresulttest);
                 //display route instructions
-                System.Diagnostics.Debug.WriteLine(route.Plan.Itineraries);
-                foreach (var item in route.Plan.Itineraries)
+
+                foreach (var item in route.plan.itineraries)
                 {
-                    TextBox3.Text = TextBox3.Text + Environment.NewLine + item;
+                    int i = 0;
+                    routeCoo = new string[item.legs.Count()*2];
+                    
+                    foreach (var leg in item.legs) //ITINERARY
+                    {                        
+                        routeCoo[i] = leg.from.lat.ToString() + "," + leg.from.lon.ToString();
+                        ++i;
+                        routeCoo[i] = leg.to.lat.ToString() + "," + leg.to.lon.ToString();
+                        i++;
+                        foreach (var steps in leg.steps)
+                        {
+                            TextBox3.Text = TextBox3.Text + Environment.NewLine + leg.mode + " " + steps.absoluteDirection + " FOR "+ leg.distance+"METRES";
+                        }
+                        //System.Diagnostics.Debug.WriteLine("FROM: Lat: "+leg.from.lat + " Lon:" + leg.from.lon + " Name:"+ leg.from.name +"\n");
+                        //System.Diagnostics.Debug.WriteLine("TO: " + leg.to.lat + " " + leg.to.lon + "\n");
+                    }
                 }
             }
             else if (transportType == "drive" || transportType == "walk")
             {
-                string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start="+
-                            startLat+","+ startLon +"&end="+ destinationLat +","+ destinationLon+"&"+
-                            "routeType="+ transportType + "&token="+token);
+                string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
+                            startLat + "," + startLon + "&end=" + destinationLat + "," + destinationLon + "&" +
+                            "routeType=" + transportType + "&token=" + token);
                 WebRequest requestObjGet = WebRequest.Create(strurltest);
                 requestObjGet.Method = "GET";
                 HttpWebResponse responseObjGet = null;
@@ -264,11 +399,11 @@ namespace transportAPI
                     routeCoo[i] = item[3].ToString();
                     i++;
                     TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
-                    
+
                 }
             }
         }
-  
+
     }
 
 }
