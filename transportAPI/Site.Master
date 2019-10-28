@@ -10,7 +10,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
     <script src="Scripts/jquery-3.3.1.min.js"></script>
     <script src="https://cdn.onemap.sg/leaflet/onemap-leaflet.js"></script>
+    <link href="Content/leaflet.css" rel="stylesheet" />
+    <script src="Scripts/leaflet-0.7.3.js"></script>
+    <script src="Scripts/leaflet-0.7.3.min.js"></script>
+
     <asp:PlaceHolder runat="server"></asp:PlaceHolder>
+
 </head>
 <body>
     <form runat="server">
@@ -20,7 +25,8 @@
         </asp:ScriptManager>
 
         <div class="container body-content">
-            <h1>Singapore Map</h1>
+            <h1>Singapore Map
+            </h1>
             <div id="textbox1">
                 <asp:TextBox ID="TextBox1" runat="server" OnTextChanged="TextBox1_TextChanged">Destination location</asp:TextBox>
             </div>
@@ -28,9 +34,17 @@
                 <asp:TextBox ID="TextBox2" runat="server" OnTextChanged="TextBox2_TextChanged">Starting location</asp:TextBox>
             </div>
             <div id="button">
-                <button type="button" onclick="showEndPosition()">Show map marker</button>
+                <asp:Label ID="Label1" runat="server" Text="Mode of transport"></asp:Label>
+                <asp:RadioButtonList ID="TptOptions" CssClass="radioButtonList" runat="server" RepeatDirection="Horizontal" OnSelectedIndexChanged="TptOptions_SelectedIndexChanged">
+                    <asp:ListItem>drive</asp:ListItem>
+                    <asp:ListItem>pt</asp:ListItem>
+                    <asp:ListItem>walk</asp:ListItem>
+                </asp:RadioButtonList>
                 <asp:Button ID="Button1" runat="server" OnClick="Button1_Click1" Text="Search" />
             </div>
+
+            <asp:TextBox ID="TextBox3" runat="server" TextMode="MultiLine" Height="146px" OnTextChanged="TextBox3_TextChanged">Directions:</asp:TextBox>
+
             <div id='mapdiv' style='height: 800px;'></div>
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
@@ -44,6 +58,12 @@
         var destinationLongitude = '<%=this.destinationLon%>';
         var startLatitude = '<%=this.startLat%>';
         var startLongitude = '<%=this.startLon%>';
+        var route_geometry = '<%=this.route_geometry%>';
+        var routeCoo = '<%=this.routeCoo%>';
+        destinationLatitude = parseFloat(destinationLatitude);
+        destinationLongitude = parseFloat(destinationLongitude);
+        startLatitude = parseFloat(startLatitude);
+        startLongitude = parseFloat(startLongitude);
 
         L.Icon.Default.imagePath = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/images"; // missing setup
         var center = L.bounds([1.56073, 104.11475], [1.16, 103.502]).getCenter();
@@ -67,33 +87,54 @@
 
         //show current position
         function showPosition(position) {
-
             marker = new L.Marker([position.coords.latitude, position.coords.longitude], { bounceOnAdd: false }).addTo(map);
+            marker.bindPopup("<b>You are here</b>").openPopup();
             var popup = L.popup()
                 .setLatLng([position.coords.latitude, position.coords.longitude])
                 .setContent('You are here!')
                 .openOn(map);
-
-
         }
 
         //show destination position
         function showEndPosition() {
             marker = new L.Marker([destinationLatitude, destinationLongitude], { bounceOnAdd: false }).addTo(map);
-            var popup = L.popup()
-                .setLatLng([destinationLatitude, destinationLongitude])
-                .setContent('Your destination is here!')
-                .openOn(map);
+            marker.bindPopup("<b>Destination here!</b>").openPopup();
         }
 
-        getLocation();
+        function showStartPosition() {
+            marker = new L.Marker([startLatitude, startLongitude], { bounceOnAdd: false }).addTo(map);
+            marker.bindPopup("<b>Start here!</b>").openPopup();
+        }
 
+        //show start and end markers
         $(document).ready(function () {
-            $('#Button1').click(function () {
-                showEndPosition();
-            });
+            getLocation();
+            showStartPosition();
+            showEndPosition();
         });
 
+        // create a red polyline from an array of LatLng points
+        var latlngs = [
+        <%
+        if (routeCoo != null)
+        {
+            for (int i = 0; i < routeCoo.Length; i++)
+            {
+                Response.Write("[");
+                string[] cood = routeCoo[i].Split(',');
+                Response.Write("parseFloat(" + cood[0] + "), parseFloat(" + cood[1] + ")]");
+                if (i != (routeCoo.Length - 1))
+                {
+                    Response.Write(",");
+                }
+            }
+        }
+
+        %>
+        ];
+        var polyline = L.polyline(latlngs, { color: 'red' }).addTo(map);
+        // zoom the map to the polyline
+        map.fitBounds(polyline.getBounds());
     </script>
 </body>
 </html>
