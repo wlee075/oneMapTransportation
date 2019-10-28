@@ -333,9 +333,10 @@ namespace transportAPI
             {
                 var time = DateTime.Now.ToString("HH:mm:ss");
                 var date = DateTime.Today.ToString("yyyy-MM-dd");
+                var mode = "BUS";
                 string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
                          startLat + "," + startLon + "&end=" + destinationLat + "," + destinationLon + "&" +
-                         "routeType=" + transportType + "&token=" + token + "&date=" + date + "&time=" + time + "&mode=TRANSIT&maxWalkDistance=1000&numItineraries=1");
+                         "routeType=" + transportType + "&token=" + token + "&date=" + date + "&time=" + time + "&mode="+mode+"&maxWalkDistance=1000&numItineraries=1");
                 WebRequest requestObjGet = WebRequest.Create(strurltest);
                 requestObjGet.Method = "GET";
                 HttpWebResponse responseObjGet = null;
@@ -363,12 +364,21 @@ namespace transportAPI
                         ++i;
                         routeCoo[i] = leg.to.lat.ToString() + "," + leg.to.lon.ToString();
                         i++;
-                        foreach (var steps in leg.steps)
+                        if(leg.mode == "WALK")
                         {
-                            TextBox3.Text = TextBox3.Text + Environment.NewLine + leg.mode + " " + steps.absoluteDirection + " FOR "+ leg.distance+"METRES";
+                            foreach (var steps in leg.steps)
+                            {
+                               TextBox3.Text = TextBox3.Text + Environment.NewLine + leg.mode + " " + steps.absoluteDirection + " FOR "+ leg.distance+" METRES";
+                            }
                         }
-                        //System.Diagnostics.Debug.WriteLine("FROM: Lat: "+leg.from.lat + " Lon:" + leg.from.lon + " Name:"+ leg.from.name +"\n");
-                        //System.Diagnostics.Debug.WriteLine("TO: " + leg.to.lat + " " + leg.to.lon + "\n");
+                        else if(leg.mode == "SUBWAY")
+                        {
+                            TextBox3.Text = TextBox3.Text + Environment.NewLine + "TAKE " + leg.mode + " (" + leg.routeLongName+ ") "+" FROM " + leg.from.name + " TO " + leg.to.name + " FOR "+ leg.numIntermediateStops + " STOP(S)";
+                        }
+                        else if (leg.mode == "BUS")
+                        {
+                            TextBox3.Text = TextBox3.Text + Environment.NewLine + "TAKE " + leg.routeLongName + " FROM " + leg.from.name + " TO " + leg.to.name + " FOR " + leg.numIntermediateStops + " STOP(S)";
+                        }
                     }
                 }
             }

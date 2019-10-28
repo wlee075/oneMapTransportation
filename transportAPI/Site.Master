@@ -28,10 +28,10 @@
             <h1>Singapore Map
             </h1>
             <div id="textbox1">
-                <asp:TextBox ID="TextBox1" runat="server" OnTextChanged="TextBox1_TextChanged">Destination location</asp:TextBox>
+                End <asp:TextBox ID="TextBox1" runat="server" OnTextChanged="TextBox1_TextChanged">Singapore Polytechnic</asp:TextBox>
             </div>
             <div id="textbox2">
-                <asp:TextBox ID="TextBox2" runat="server" OnTextChanged="TextBox2_TextChanged">Starting location</asp:TextBox>
+                Start<asp:TextBox ID="TextBox2" runat="server" OnTextChanged="TextBox2_TextChanged">Nanyang Technological University</asp:TextBox>
             </div>
             <div id="button">
                 <asp:Label ID="Label1" runat="server" Text="Mode of transport"></asp:Label>
@@ -43,7 +43,11 @@
                 <asp:Button ID="Button1" runat="server" OnClick="Button1_Click1" Text="Search" />
             </div>
 
-            <asp:TextBox ID="TextBox3" runat="server" TextMode="MultiLine" Height="146px" OnTextChanged="TextBox3_TextChanged">Directions:</asp:TextBox>
+            <div id="directions">
+                <asp:Label ID="Label2" runat="server" Text="Directions"></asp:Label>
+                <asp:TextBox CliendIDMode="Static" ID="TextBox3" runat="server" TextMode="MultiLine" Height="146px" OnTextChanged="TextBox3_TextChanged"></asp:TextBox>
+            </div>
+            
 
             <div id='mapdiv' style='height: 800px;'></div>
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
@@ -135,6 +139,14 @@
         var polyline = L.polyline(latlngs, { color: 'purple' }).addTo(map);
         // zoom the map to the polyline
         map.fitBounds(polyline.getBounds());
+
+        document.getElementById("Button1").addEventListener("click", function () {
+            clearTextBox();
+        });
+
+        function clearTextBox() {
+            document.getElementById('TextBox3').value = '';
+        }
     </script>
 </body>
 </html>
