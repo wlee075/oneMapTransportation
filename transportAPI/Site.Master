@@ -7,13 +7,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OneMap2 XYZ (Default)</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
     <script src="Scripts/jquery-3.3.1.min.js"></script>
     <script src="https://cdn.onemap.sg/leaflet/onemap-leaflet.js"></script>
     <link href="Content/leaflet.css" rel="stylesheet" />
-    <script src="Scripts/leaflet-0.7.3.js"></script>
-    <script src="Scripts/leaflet-0.7.3.min.js"></script>
-
+    <script src="Scripts/leaflet.js"></script>
+    <script src="Scripts/leaflet-src.js"></script>
+    <script src="Scripts/leaflet-routing-machine.js"></script>
+    <link href="Content/leaflet-routing-machine.css" rel="stylesheet" />
+    <script src="Scripts/leaflet-routing-machine.js"></script>
+    <!-- new -->
     <asp:PlaceHolder runat="server"></asp:PlaceHolder>
 
 </head>
@@ -28,10 +30,10 @@
             <h1>Singapore Map
             </h1>
             <div id="textbox1">
-                <asp:TextBox ID="TextBox1" runat="server" OnTextChanged="TextBox1_TextChanged">Destination location</asp:TextBox>
+                End <asp:TextBox ID="TextBox1" runat="server" OnTextChanged="TextBox1_TextChanged">Singapore Polytechnic</asp:TextBox>
             </div>
             <div id="textbox2">
-                <asp:TextBox ID="TextBox2" runat="server" OnTextChanged="TextBox2_TextChanged">Starting location</asp:TextBox>
+                Start<asp:TextBox ID="TextBox2" runat="server" OnTextChanged="TextBox2_TextChanged">Nanyang Technological University</asp:TextBox>
             </div>
             <div id="button">
                 <asp:Label ID="Label1" runat="server" Text="Mode of transport"></asp:Label>
@@ -42,8 +44,12 @@
                 </asp:RadioButtonList>
                 <asp:Button ID="Button1" runat="server" OnClick="Button1_Click1" Text="Search" />
             </div>
-
-            <asp:TextBox ID="TextBox3" runat="server" TextMode="MultiLine" Height="146px" OnTextChanged="TextBox3_TextChanged">Directions:</asp:TextBox>
+            <!-- 
+            <div id="directions">
+                <asp:Label ID="Label2" runat="server" Text="Directions"></asp:Label>
+                <asp:TextBox CliendIDMode="Static" ID="TextBox3" runat="server" TextMode="MultiLine" Height="146px" OnTextChanged="TextBox3_TextChanged"></asp:TextBox>
+            </div>
+            -->
 
             <div id='mapdiv' style='height: 800px;'></div>
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
@@ -64,8 +70,7 @@
         destinationLongitude = parseFloat(destinationLongitude);
         startLatitude = parseFloat(startLatitude);
         startLongitude = parseFloat(startLongitude);
-
-        L.Icon.Default.imagePath = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/images"; // missing setup
+        L.Icon.Default.imagePath = "Content/images/"; // missing setup
         var center = L.bounds([1.56073, 104.11475], [1.16, 103.502]).getCenter();
         var map = L.map('mapdiv').setView([center.x, center.y], 12);
 
@@ -132,9 +137,23 @@
 
         %>
         ];
-        var polyline = L.polyline(latlngs, { color: 'red' }).addTo(map);
+        var polyline = L.polyline(latlngs, { color: 'purple' });
         // zoom the map to the polyline
         map.fitBounds(polyline.getBounds());
+        L.Routing.control({
+            waypoints: [
+                L.latLng(1.3529493702032802, 103.68922350867099),
+                L.latLng(1.3091739929511101, 103.781094783028)
+            ]
+        }).addTo(map);
+
+        document.getElementById("Button1").addEventListener("click", function () {
+            clearTextBox();
+        });
+
+        function clearTextBox() {
+            document.getElementById('TextBox3').value = '';
+        }
     </script>
 </body>
 </html>
