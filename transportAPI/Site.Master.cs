@@ -385,6 +385,7 @@ namespace transportAPI
                         ++i;
                         routeCoo[i] = leg.to.lat.ToString() + "," + leg.to.lon.ToString();
                         i++;
+                        /*
                         if (leg.mode == "WALK")
                         {
                             foreach (var steps in leg.steps)
@@ -401,6 +402,7 @@ namespace transportAPI
                         {
                             TextBox3.Text = TextBox3.Text + Environment.NewLine + "TAKE " + leg.routeLongName + " FROM " + leg.from.name + " TO " + leg.to.name + " FOR " + leg.numIntermediateStops + " STOP(S)";
                         }
+                        */
                     }
                 }
             }
@@ -430,6 +432,7 @@ namespace transportAPI
                 {
                     routeCoo[i] = item[3].ToString();
                     i++;
+                    /*
                     if(transportType == "walk")
                     {
                         if(item[5].ToString() != "0m" && item[0].ToString() != "Head")
@@ -443,13 +446,14 @@ namespace transportAPI
                     {
                         TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
                     }
-                    
+                    */
 
                 }
             }
         }
 
         //GET METHOD for search query given coordinates
+        /*
         private void GetAddressCoordinates(float latitude, float longitude)
         {
             //GET METHOD for destination search query
@@ -472,11 +476,11 @@ namespace transportAPI
             Rootobject searchAddressFromCoords = new JavaScriptSerializer().Deserialize<Rootobject>(strresulttest);
             foreach (var item in searchAddressFromCoords.GeocodeInfo)
             {
-                System.Diagnostics.Debug.WriteLine("bbooo"+item.ROAD);
+                AddressFromCoordinates = item.ROAD;
             }
-            System.Diagnostics.Debug.WriteLine(AddressFromCoordinates);
-        }
 
+        }
+        */
     }
 
 }
