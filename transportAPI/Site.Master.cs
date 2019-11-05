@@ -21,10 +21,10 @@ namespace transportAPI
         public string startLon;
         private string destinationInput;
         private string startLocationInput;
-        private string transportType;
-        private string AddressFromCoordinates;
+        public string transportType;
+       // private string AddressFromCoordinates;
         //reminder: token expires after 3 days. dont forget to request new one.
-        private const string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjM0MzYsInVzZXJfaWQiOjM0MzYsImVtYWlsIjoid2xlZTA3NUBlLm50dS5lZHUuc2ciLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE1NzE5MzE0NjksImV4cCI6MTU3MjM2MzQ2OSwibmJmIjoxNTcxOTMxNDY5LCJqdGkiOiJmMDRlMWNlMzVlZTFiMmNlOGMzNDE0N2UxNjFhYzZhMiJ9.BradZOMhi5tEdYs_1SYCdSyd5ZKswqumkjM4SlUoWIo";
+        private const string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjM0MzYsInVzZXJfaWQiOjM0MzYsImVtYWlsIjoid2xlZTA3NUBlLm50dS5lZHUuc2ciLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE1NzI5MTk3ODAsImV4cCI6MTU3MzM1MTc4MCwibmJmIjoxNTcyOTE5NzgwLCJqdGkiOiJlOWQ2ZTAzOWI0ODMyZTgzN2ViYTMyOWI1NmVmMDViMiJ9.l6pOf9paXdCdDc8hCgaufnTLFjibQqsvdOJNqtGAyPw";
         public string route_geometry;
 
         public class Address
@@ -296,9 +296,9 @@ namespace transportAPI
                     destinationLat = item.latitude;
                     destinationLon = item.longitude;
                     //reminder: remove after prod. Data successfully passed to showEndPosition() JS function
-                    System.Diagnostics.Debug.WriteLine("D Building name: " + item.building + "\n");
-                    System.Diagnostics.Debug.WriteLine("Latitude: " + item.latitude + "\n");
-                    System.Diagnostics.Debug.WriteLine("Longitude: " + item.longitude + "\n");
+                    // System.Diagnostics.Debug.WriteLine("D Building name: " + item.building + "\n");
+                    // System.Diagnostics.Debug.WriteLine("Latitude: " + item.latitude + "\n");
+                    // System.Diagnostics.Debug.WriteLine("Longitude: " + item.longitude + "\n");
                     break;
                 }
 
@@ -307,9 +307,9 @@ namespace transportAPI
                     startLat = item.latitude;
                     startLon = item.longitude;
                     //reminder: remove after prod. Data successfully passed to showEndPosition() JS function
-                    System.Diagnostics.Debug.WriteLine("S Building name: " + item.building + "\n");
-                    System.Diagnostics.Debug.WriteLine("Latitude: " + startLat + "\n");
-                    System.Diagnostics.Debug.WriteLine("Longitude: " + startLon + "\n");
+                    // System.Diagnostics.Debug.WriteLine("S Building name: " + item.building + "\n");
+                    // System.Diagnostics.Debug.WriteLine("Latitude: " + startLat + "\n");
+                    // System.Diagnostics.Debug.WriteLine("Longitude: " + startLon + "\n");
                     break;
                 }
 
@@ -385,7 +385,7 @@ namespace transportAPI
                         ++i;
                         routeCoo[i] = leg.to.lat.ToString() + "," + leg.to.lon.ToString();
                         i++;
-                        /*
+                       
                         if (leg.mode == "WALK")
                         {
                             foreach (var steps in leg.steps)
@@ -402,7 +402,7 @@ namespace transportAPI
                         {
                             TextBox3.Text = TextBox3.Text + Environment.NewLine + "TAKE " + leg.routeLongName + " FROM " + leg.from.name + " TO " + leg.to.name + " FOR " + leg.numIntermediateStops + " STOP(S)";
                         }
-                        */
+                       
                     }
                 }
             }
@@ -432,7 +432,7 @@ namespace transportAPI
                 {
                     routeCoo[i] = item[3].ToString();
                     i++;
-                    /*
+                   
                     if(transportType == "walk")
                     {
                         if(item[5].ToString() != "0m" && item[0].ToString() != "Head")
@@ -446,7 +446,7 @@ namespace transportAPI
                     {
                         TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
                     }
-                    */
+                  
 
                 }
             }
