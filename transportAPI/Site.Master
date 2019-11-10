@@ -122,12 +122,16 @@
 
         if (transportType != "drive") {
 
-            var polyline = L.polyline(latlngs, { color: 'purple' }).addTo(map);
+            //var polyline = L.polyline(latlngs, { color: 'purple' }).addTo(map);
            
-            var router = L.Routing.osrmv1(), line;
-            /*
+            var router = L.Routing.osrmv1(), waypoints = [],line;
+
+            for (var k = 0; k < waypoint.length; k++) {
+                waypoints.push({ latLng: L.latLng(waypoint[k]) });
+            }
+
             router.route(
-                waypoint
+                waypoints
                 , function (err, routes) {
                 if (line) {
                     map.removeLayer(line);
@@ -139,7 +143,7 @@
                     line = L.Routing.line(routes[0]).addTo(map);
                 }
             });
-       */
+       
         }    
         else {
             var polyline = L.polyline(latlngs, { color: 'purple' });
