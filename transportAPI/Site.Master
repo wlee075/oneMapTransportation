@@ -122,10 +122,10 @@
 
         if (transportType != "drive") {
 
-            //var polyline = L.polyline(latlngs, { color: 'purple' }).addTo(map);
+            var polyline = L.polyline(latlngs, { color: 'purple' }).addTo(map);
            
             var router = L.Routing.osrmv1(), line;
-
+            /*
             router.route(
                 waypoint
                 , function (err, routes) {
@@ -139,7 +139,7 @@
                     line = L.Routing.line(routes[0]).addTo(map);
                 }
             });
-       
+       */
         }    
         else {
             var polyline = L.polyline(latlngs, { color: 'purple' });
