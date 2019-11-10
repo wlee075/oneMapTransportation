@@ -8,25 +8,22 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Script.Serialization;
 using static transportAPI.SiteMaster;
+using Newtonsoft.Json;
+using System.Text;
+using System.Web.Script.Services;
 
 namespace transportAPI
 {
+
     public partial class SiteMaster : MasterPage
     {
         //route coordinates
+        public static string[,] routeList;
         public string[] routeCoo;
-        public string destinationLat;
-        public string destinationLon;
-        public string startLat;
-        public string startLon;
-        private string destinationInput;
-        private string startLocationInput;
-        private string transportType;
-        private string AddressFromCoordinates;
+        public string transportType;
+        // private string AddressFromCoordinates;
         //reminder: token expires after 3 days. dont forget to request new one.
-        private const string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjM0MzYsInVzZXJfaWQiOjM0MzYsImVtYWlsIjoid2xlZTA3NUBlLm50dS5lZHUuc2ciLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE1NzE5MzE0NjksImV4cCI6MTU3MjM2MzQ2OSwibmJmIjoxNTcxOTMxNDY5LCJqdGkiOiJmMDRlMWNlMzVlZTFiMmNlOGMzNDE0N2UxNjFhYzZhMiJ9.BradZOMhi5tEdYs_1SYCdSyd5ZKswqumkjM4SlUoWIo";
-        public string route_geometry;
-
+        private const string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjM0MzYsInVzZXJfaWQiOjM0MzYsImVtYWlsIjoid2xlZTA3NUBlLm50dS5lZHUuc2ciLCJmb3JldmVyIjpmYWxzZSwiaXNzIjoiaHR0cDpcL1wvb20yLmRmZS5vbmVtYXAuc2dcL2FwaVwvdjJcL3VzZXJcL3Nlc3Npb24iLCJpYXQiOjE1NzMyOTI5MzksImV4cCI6MTU3MzcyNDkzOSwibmJmIjoxNTczMjkyOTM5LCJqdGkiOiI0ZTQ5MTg1ZmExZjkyZTdiZTYzMzdjNTJiN2RkMjgzMSJ9.NOd8opw5X-wuD63OfDJXLg9GPxSobPQKHbfTm2Uj56o";
         public class Address
         {
             public List<SearchAddress> results { get; set; }
@@ -265,98 +262,69 @@ namespace transportAPI
         protected void Page_Load(object sender, EventArgs e)
         {
 
-            //reminder: remove after prod. Retrieving input from textbox is working.
-            //System.Diagnostics.Debug.WriteLine("Destination: "+destinationInput+ " Start: "+ startLocationInput);
         }
-        //GET METHOD for search query
-        private void GetAddress(string address)
+
+        public struct Coordinates
         {
-            //GET METHOD for destination search query
-            string strurltest = String.Format("https://developers.onemap.sg/commonapi/search?searchVal=" + address + "&returnGeom=Y&getAddrDetails=Y&pageNum=");
-            WebRequest requestObjGet = WebRequest.Create(strurltest);
-            requestObjGet.Method = "GET";
-            HttpWebResponse responseObjGet = null;
-            responseObjGet = (HttpWebResponse)requestObjGet.GetResponse();
-            string strresulttest = null;
-            using (Stream stream = responseObjGet.GetResponseStream())
+            public Coordinates(float lat, float lon, string site)
             {
-                StreamReader sr = new StreamReader(stream);
-                strresulttest = sr.ReadToEnd();
-                //reminder: remove after prod. GET is working.
-                //System.Diagnostics.Debug.WriteLine(strresulttest);
-                sr.Close();
+                latitude = lat;
+                longitude = lon;
+                siteName = site;
+            }
+            public float latitude
+            {
+                get;
+                private set;
+            }
+            public float longitude
+            {
+                get;
+                private set;
             }
 
-            //display search recommendations
-            Address searchAddress = new JavaScriptSerializer().Deserialize<Address>(strresulttest);
-            foreach (var item in searchAddress.results)
+            public string siteName
             {
-                if (item.building == address.ToUpper() && address == destinationInput)
-                {
-                    destinationLat = item.latitude;
-                    destinationLon = item.longitude;
-                    //reminder: remove after prod. Data successfully passed to showEndPosition() JS function
-                    System.Diagnostics.Debug.WriteLine("D Building name: " + item.building + "\n");
-                    System.Diagnostics.Debug.WriteLine("Latitude: " + item.latitude + "\n");
-                    System.Diagnostics.Debug.WriteLine("Longitude: " + item.longitude + "\n");
-                    break;
-                }
-
-                if (item.building == address.ToUpper() && address == startLocationInput)
-                {
-                    startLat = item.latitude;
-                    startLon = item.longitude;
-                    //reminder: remove after prod. Data successfully passed to showEndPosition() JS function
-                    System.Diagnostics.Debug.WriteLine("S Building name: " + item.building + "\n");
-                    System.Diagnostics.Debug.WriteLine("Latitude: " + startLat + "\n");
-                    System.Diagnostics.Debug.WriteLine("Longitude: " + startLon + "\n");
-                    break;
-                }
-
-
+                get;
+                private set;
             }
         }
 
-        protected void TextBox1_TextChanged(object sender, EventArgs e)
+
+        private void getTravelDestination()
         {
-
-        }
-
-        protected void TextBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void Button1_Click1(object sender, EventArgs e)
-        {
-            destinationInput = TextBox1.Text;
-            startLocationInput = TextBox2.Text;
-            GetAddress(destinationInput);
-            GetAddress(startLocationInput);
-            GetInstructions();
-        }
-
-        protected void TextBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void TptOptions_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string selectedValue = TptOptions.SelectedItem.Text;
-            transportType = selectedValue;
+            var coord = new List<Coordinates>();
+            List<ListItem> selected = new List<ListItem>();
+          
+            foreach (ListItem item in CbLocations.Items)
+                if (item.Selected) selected.Add(item);
+            
+            for (int i = 0; i < selected.Count; i++)
+            {
+               var names = GetAddressTrial(selected[i].Text);
+               coord.Add(new Coordinates(names.Item1, names.Item2, names.Item3));
+            }
+            
+            //get point to point directions
+            for (int i = 0; i < coord.Count-1; i++)
+            {
+                GetInstructionsTrial(coord[i].latitude, coord[i].longitude, coord[i + 1].latitude, coord[i + 1].longitude);
+            }
+            //pass list of coords as json from code behind to javascript via hiddenvar. Stupid but works.
+            HiddenField1.Value = Newtonsoft.Json.JsonConvert.SerializeObject(coord);
         }
 
         //GET METHOD for route query
-        private void GetInstructions()
+        private void GetInstructionsTrial(float startLat, float startLon, float endLat, float endLon)
         {
+            
             if (transportType == "pt")
             {
                 var time = DateTime.Now.ToString("HH:mm:ss");
                 var date = DateTime.Today.ToString("yyyy-MM-dd");
                 var mode = "BUS";
                 string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
-                         startLat + "," + startLon + "&end=" + destinationLat + "," + destinationLon + "&" +
+                         startLat + "," + startLon + "&end=" + endLat + "," + endLon + "&" +
                          "routeType=" + transportType + "&token=" + token + "&date=" + date + "&time=" + time + "&mode=" + mode + "&maxWalkDistance=1000&numItineraries=1");
                 WebRequest requestObjGet = WebRequest.Create(strurltest);
                 requestObjGet.Method = "GET";
@@ -367,25 +335,23 @@ namespace transportAPI
                 {
                     StreamReader sr = new StreamReader(stream);
                     strresulttest = sr.ReadToEnd();
-                    //reminder: remove after prod. GET is working.
-                    //System.Diagnostics.Debug.WriteLine(strresulttest);
                     sr.Close();
                 }
                 PublicTransport route = new JavaScriptSerializer().Deserialize<PublicTransport>(strresulttest);
-                //display route instructions
-
+                routeList = new string[route.plan.itineraries.Length, 4];
+     
                 foreach (var item in route.plan.itineraries)
                 {
                     int i = 0;
                     routeCoo = new string[item.legs.Count() * 2];
-
-                    foreach (var leg in item.legs) //ITINERARY
+                    
+                    foreach (var leg in item.legs)
                     {
                         routeCoo[i] = leg.from.lat.ToString() + "," + leg.from.lon.ToString();
                         ++i;
                         routeCoo[i] = leg.to.lat.ToString() + "," + leg.to.lon.ToString();
                         i++;
-                        /*
+                    
                         if (leg.mode == "WALK")
                         {
                             foreach (var steps in leg.steps)
@@ -402,14 +368,17 @@ namespace transportAPI
                         {
                             TextBox3.Text = TextBox3.Text + Environment.NewLine + "TAKE " + leg.routeLongName + " FROM " + leg.from.name + " TO " + leg.to.name + " FOR " + leg.numIntermediateStops + " STOP(S)";
                         }
-                        */
+
                     }
+                   
+
                 }
+                
             }
             else if (transportType == "drive" || transportType == "walk")
             {
                 string strurltest = String.Format("https://developers.onemap.sg/privateapi/routingsvc/route?start=" +
-                            startLat + "," + startLon + "&end=" + destinationLat + "," + destinationLon + "&" +
+                            startLat + "," + startLon + "&end=" + endLat + "," + endLon + "&" +
                             "routeType=" + transportType + "&token=" + token);
                 WebRequest requestObjGet = WebRequest.Create(strurltest);
                 requestObjGet.Method = "GET";
@@ -424,7 +393,6 @@ namespace transportAPI
                 }
 
                 Route route = new JavaScriptSerializer().Deserialize<Route>(strresulttest);
-                route_geometry = route.route_geometry;
                 //display route instructions
                 routeCoo = new string[route.route_instructions.Count];
                 int i = 0;
@@ -432,13 +400,13 @@ namespace transportAPI
                 {
                     routeCoo[i] = item[3].ToString();
                     i++;
-                    /*
-                    if(transportType == "walk")
+
+                    if (transportType == "walk")
                     {
-                        if(item[5].ToString() != "0m" && item[0].ToString() != "Head")
+                        if (item[5].ToString() != "0m" && item[0].ToString() != "Head")
                             TextBox3.Text = TextBox3.Text + Environment.NewLine + "In " + item[5] + " " + item[9];
-                        else if(item[5].ToString() != "0m" && item[0].ToString() == "Head")
-                            TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9] +" For " + item[5];
+                        else if (item[5].ToString() != "0m" && item[0].ToString() == "Head")
+                            TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9] + " For " + item[5];
                         else
                             TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
                     }
@@ -446,12 +414,78 @@ namespace transportAPI
                     {
                         TextBox3.Text = TextBox3.Text + Environment.NewLine + item[9];
                     }
-                    */
 
                 }
+              
             }
+   
         }
 
+        private Tuple<float,float,string> GetAddressTrial(string address)
+        {
+            float lat = 0;
+            float lon = 0;
+            string site = " ";
+            //GET METHOD for destination search query
+            string strurltest = String.Format("https://developers.onemap.sg/commonapi/search?searchVal=" + address + "&returnGeom=Y&getAddrDetails=Y&pageNum=");
+            WebRequest requestObjGet = WebRequest.Create(strurltest);
+            requestObjGet.Method = "GET";
+            HttpWebResponse responseObjGet = null;
+            responseObjGet = (HttpWebResponse)requestObjGet.GetResponse();
+            string strresulttest = null;
+            using (Stream stream = responseObjGet.GetResponseStream())
+            {
+                StreamReader sr = new StreamReader(stream);
+                strresulttest = sr.ReadToEnd();
+                sr.Close();
+            }
+            //display search recommendations
+            Address searchAddress = new JavaScriptSerializer().Deserialize<Address>(strresulttest);
+            foreach (var item in searchAddress.results)
+            {
+                if (item.building == address.ToUpper().Trim())
+                {
+                    lat = float.Parse(item.latitude);
+                    lon = float.Parse(item.longitude);
+                    site = item.building;
+                    return Tuple.Create(lat, lon,site);
+                }
+            }
+            return Tuple.Create(lat, lon,site);
+        }
+
+        protected void TextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void TextBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Button1_Click1(object sender, EventArgs e)
+        {
+            //destinationInput = TextBox1.Text;
+            //startLocationInput = TextBox2.Text;
+            //GetAddress(destinationInput);
+            //GetAddress(startLocationInput);
+            getTravelDestination();
+            //GetInstructions();
+
+        }
+
+        protected void TextBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void TptOptions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedValue = TptOptions.SelectedItem.Text;
+            transportType = selectedValue;
+        }
+       
         //GET METHOD for search query given coordinates
         /*
         private void GetAddressCoordinates(float latitude, float longitude)
