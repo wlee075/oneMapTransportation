@@ -454,25 +454,9 @@ namespace transportAPI
             return Tuple.Create(lat, lon,site);
         }
 
-        protected void TextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        protected void TextBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         protected void Button1_Click1(object sender, EventArgs e)
         {
-            //destinationInput = TextBox1.Text;
-            //startLocationInput = TextBox2.Text;
-            //GetAddress(destinationInput);
-            //GetAddress(startLocationInput);
             getTravelDestination();
-            //GetInstructions();
-
         }
 
         protected void TextBox3_TextChanged(object sender, EventArgs e)
